@@ -1,0 +1,22 @@
+# .NET
+bin/
+obj/
+*.user
+.vs/
+
+# 前端
+node_modules/
+dist/
+
+# 环境变量
+.env
+
+# AI 工具工作目录（Playwright MCP 快照、其他工具）
+.playwright-mcp/
+.qoder/
+
+# 测试数据（体积大，不入库）
+data/testcases/*
+!data/testcases/.gitkeep
+data/spj/*
+!data/spj/.gitkeep

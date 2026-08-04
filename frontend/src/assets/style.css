@@ -1,0 +1,297 @@
+/* 全局基础样式（无 UI 框架，原生 CSS） */
+:root {
+  --bg: #f5f6f8;
+  --card: #ffffff;
+  --primary: #2563eb;
+  --border: #e2e5e9;
+  --text: #1f2937;
+  --muted: #6b7280;
+  --danger: #dc2626;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+}
+
+a {
+  color: var(--primary);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* 顶部导航 */
+.nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem 2rem;
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+}
+
+.brand {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+.username {
+  color: var(--muted);
+}
+
+/* 内容区 */
+.content {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+/* 卡片 */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+/* 表单 */
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.3rem;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+input[type='text'],
+input[type='password'],
+input[type='number'],
+textarea,
+select {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-family: inherit;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: -1px;
+}
+
+/* 按钮 */
+.btn {
+  padding: 0.5rem 1.2rem;
+  border: none;
+  border-radius: 6px;
+  background: var(--primary);
+  color: #fff;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.btn:hover {
+  opacity: 0.9;
+}
+
+.btn-small {
+  height: 2em; /* 高度固定为两字符高 */
+  line-height: 2em; /* 文字垂直居中（行高 = 高度） */
+  padding: 0 0.8rem; /* 上下不加 padding，高度完全由 height 控制 */
+  font-size: 0.85rem;
+  white-space: nowrap; /* 禁止文字换行，一行完整显示 */
+  flex-shrink: 0; /* flex 容器里不被压缩，宽度真正随内容自适应 */
+}
+
+.btn-danger {
+  background: var(--danger);
+}
+
+.btn-secondary {
+  background: var(--muted);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 表格 */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--card);
+}
+
+th,
+td {
+  padding: 0.6rem 0.8rem;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  font-size: 0.95rem;
+}
+
+th {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+tr:hover td {
+  background: #f9fafb;
+}
+
+/* 难度徽章 */
+.badge {
+  display: inline-block;
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  color: #fff;
+}
+
+.badge-1 { background: #22c55e; }
+.badge-2 { background: #84cc16; }
+.badge-3 { background: #eab308; }
+.badge-4 { background: #f97316; }
+.badge-5 { background: #ef4444; }
+
+/* 分页 */
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-top: 1rem;
+}
+
+.pagination span {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+/* 错误提示 */
+.error {
+  color: var(--danger);
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
+
+/* 窄卡片（登录/注册页居中） */
+.narrow-card {
+  max-width: 400px;
+  margin: 3rem auto;
+}
+
+/* 筛选工具栏（flex 一行布局） */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.toolbar-input {
+  width: auto;
+  min-width: 140px;
+}
+
+/* 模态框 */
+.modal-mask {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.modal-card {
+  background: #fff;
+  border-radius: 10px;
+  width: 640px;
+  max-width: 95vw;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.modal-body {
+  padding: 1rem 1.5rem;
+  overflow-y: auto;
+}
+
+.modal-foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--border);
+}
+
+/* 详情页题面 */
+.problem-text {
+  white-space: pre-wrap;
+  font-family: inherit;
+  background: #f9fafb;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.8rem;
+}
+
+.sample-block {
+  margin-bottom: 0.8rem;
+}
+
+.sample-block pre {
+  background: #f9fafb;
+  border-left: 3px solid var(--primary);
+  padding: 0.5rem 0.8rem;
+  margin: 0.3rem 0;
+  white-space: pre-wrap;
+}
+
+.submit-placeholder {
+  border: 1px dashed var(--border);
+  border-radius: 6px;
+  padding: 1.5rem;
+  text-align: center;
+  color: var(--muted);
+}
+
+/* 工具类 */
+.mt-1 { margin-top: 1rem; }
+.mb-1 { margin-bottom: 1rem; }
+.text-muted { color: var(--muted); }
+.text-center { text-align: center; }

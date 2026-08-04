@@ -1,0 +1,24 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: acm
+      POSTGRES_PASSWORD: acm
+      POSTGRES_DB: acm
+    ports: ["5433:5432"]
+    volumes: ["pgdata:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U acm"]
+      interval: 5s
+
+  backend:
+    build: ./backend
+    depends_on:
+      db: { condition: service_healthy }
+    environment:
+      ConnectionStrings__Default: Host=db;Port=5432;Database=acm;Username=acm;Password=acm
+      Jwt__SecretKey: dev-secret-change-me-at-least-32-chars
+      App__AllowRegister: "true"
+    ports: ["8000:8000"]
+
+volumes: { pgdata: {} }
