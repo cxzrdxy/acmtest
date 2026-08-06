@@ -15,6 +15,9 @@ dist/
 .playwright-mcp/
 .qoder/
 
+# 本地设计截图（不入库）
+design-shots/
+
 # 测试数据（体积大，不入库）
 data/testcases/*
 !data/testcases/.gitkeep

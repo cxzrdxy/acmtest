@@ -1,12 +1,21 @@
-/* 全局基础样式（无 UI 框架，原生 CSS） */
+/* 全局基础样式（无 UI 框架，原生 CSS；现代工具风：中性灰 + 靛蓝强调 + 语义状态色） */
 :root {
-  --bg: #f5f6f8;
-  --card: #ffffff;
-  --primary: #2563eb;
-  --border: #e2e5e9;
-  --text: #1f2937;
-  --muted: #6b7280;
-  --danger: #dc2626;
+  --bg: #f6f8fa;            /* 页面底（GitHub 灰） */
+  --card: #ffffff;          /* 卡片白 */
+  --primary: #0969da;       /* 靛蓝强调 */
+  --primary-hover: #0857b3;
+  --border: #d0d7de;
+  --text: #1f2328;
+  --muted: #656d76;
+  --danger: #cf222e;
+  /* 语义状态色（对齐 GitHub 状态语义） */
+  --ok: #1a7f37;            /* 通过/AC */
+  --bad: #cf222e;           /* 答案错误/WA */
+  --warn: #9a6700;          /* 超时/编译错误 */
+  --warn-deep: #bc4c00;
+  --purple: #8250df;        /* 超内存/MLE */
+  --pink: #d1242f;          /* 运行错误/RE */
+  --gray: #6e7781;          /* 排队/评测中 */
 }
 
 * {
@@ -31,19 +40,26 @@ a:hover {
   text-decoration: underline;
 }
 
-/* 顶部导航 */
+/* 顶部导航（sticky 工具条） */
 .nav {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.8rem 2rem;
+  padding: 0.55rem 2rem;
   background: var(--card);
   border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
 .brand {
-  font-size: 1.2rem;
-  font-weight: 700;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.brand .accent {
   color: var(--primary);
 }
 
@@ -53,8 +69,34 @@ a:hover {
   gap: 1.2rem;
 }
 
+.nav-links a {
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.nav-links a:hover {
+  color: var(--primary);
+}
+
+/* 用户头像：首字母圆 */
+.avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
 .username {
   color: var(--muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 /* 内容区 */
@@ -70,6 +112,7 @@ a:hover {
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(31, 35, 40, 0.04);
 }
 
 /* 表单 */
@@ -90,33 +133,43 @@ input[type='number'],
 textarea,
 select {
   width: 100%;
-  padding: 0.5rem 0.75rem;
+  padding: 0.45rem 0.75rem;
   border: 1px solid var(--border);
   border-radius: 6px;
-  font-size: 0.95rem;
+  font-size: 0.93rem;
   font-family: inherit;
+  background: var(--card);
+  color: var(--text);
+  transition: border-color 0.15s;
 }
 
 input:focus,
 textarea:focus,
 select:focus {
-  outline: 2px solid var(--primary);
-  outline-offset: -1px;
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(9, 105, 218, 0.15);
 }
 
 /* 按钮 */
 .btn {
-  padding: 0.5rem 1.2rem;
-  border: none;
+  padding: 0.45rem 1.2rem;
+  border: 1px solid var(--primary);
   border-radius: 6px;
   background: var(--primary);
   color: #fff;
-  font-size: 0.95rem;
+  font-size: 0.92rem;
+  font-weight: 500;
   cursor: pointer;
+  transition: background 0.15s;
 }
 
 .btn:hover {
-  opacity: 0.9;
+  background: var(--primary-hover);
+}
+
+.btn:active {
+  transform: scale(0.98);
 }
 
 .btn-small {
@@ -130,10 +183,22 @@ select:focus {
 
 .btn-danger {
   background: var(--danger);
+  border-color: var(--danger);
+}
+
+.btn-danger:hover {
+  background: #b31d28;
 }
 
 .btn-secondary {
-  background: var(--muted);
+  background: var(--card);
+  border-color: var(--border);
+  color: var(--text);
+}
+
+.btn-secondary:hover {
+  background: #f3f4f6;
+  border-color: #aeb6c0;
 }
 
 .btn:disabled {
@@ -146,39 +211,48 @@ table {
   width: 100%;
   border-collapse: collapse;
   background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
 }
 
 th,
 td {
-  padding: 0.6rem 0.8rem;
+  padding: 0.55rem 0.9rem;
   border-bottom: 1px solid var(--border);
   text-align: left;
-  font-size: 0.95rem;
+  font-size: 0.93rem;
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
 }
 
 th {
   color: var(--muted);
   font-weight: 600;
+  background: #fafbfc;
 }
 
 tr:hover td {
-  background: #f9fafb;
+  background: #f6f8fa;
 }
 
-/* 难度徽章 */
+/* 难度徽章（难度递增：绿→黄→橙→红） */
 .badge {
   display: inline-block;
-  padding: 0.1rem 0.5rem;
+  padding: 0.1rem 0.55rem;
   border-radius: 999px;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
+  font-weight: 500;
   color: #fff;
 }
 
-.badge-1 { background: #22c55e; }
-.badge-2 { background: #84cc16; }
-.badge-3 { background: #eab308; }
-.badge-4 { background: #f97316; }
-.badge-5 { background: #ef4444; }
+.badge-1 { background: #1a7f37; }
+.badge-2 { background: #bf8700; }
+.badge-3 { background: #bc4c00; }
+.badge-4 { background: #e36209; }
+.badge-5 { background: #cf222e; }
 
 /* 分页 */
 .pagination {
@@ -222,7 +296,7 @@ tr:hover td {
 .modal-mask {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(31, 35, 40, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -230,8 +304,10 @@ tr:hover td {
 }
 
 .modal-card {
-  background: #fff;
+  background: var(--card);
   border-radius: 10px;
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 24px rgba(31, 35, 40, 0.12);
   width: 640px;
   max-width: 95vw;
   max-height: 85vh;
@@ -264,7 +340,7 @@ tr:hover td {
 .problem-text {
   white-space: pre-wrap;
   font-family: inherit;
-  background: #f9fafb;
+  background: #fafbfc;
   border: 1px solid var(--border);
   border-radius: 6px;
   padding: 0.8rem;
@@ -275,11 +351,13 @@ tr:hover td {
 }
 
 .sample-block pre {
-  background: #f9fafb;
+  background: #fafbfc;
+  border: 1px solid var(--border);
   border-left: 3px solid var(--primary);
   padding: 0.5rem 0.8rem;
   margin: 0.3rem 0;
   white-space: pre-wrap;
+  border-radius: 4px;
 }
 
 .submit-placeholder {
@@ -313,14 +391,14 @@ tr:hover td {
 }
 
 /* 状态徽章色（语义色，区别于难度徽章） */
-.st-ac { background: #22c55e; }      /* 绿：通过 */
-.st-wa { background: #ef4444; }      /* 红：答案错误 */
-.st-tle { background: #f97316; }     /* 橙：超时 */
-.st-mle { background: #a855f7; }     /* 紫：超内存 */
-.st-re { background: #ec4899; }      /* 粉：运行错误 */
-.st-ce { background: #eab308; }      /* 黄：编译错误 */
-.st-pending { background: #6b7280; } /* 灰：评测中 */
-.st-unknown { background: #6b7280; }
+.st-ac { background: var(--ok); }        /* 绿：通过 */
+.st-wa { background: var(--bad); }       /* 红：答案错误 */
+.st-tle { background: var(--warn-deep); } /* 橙：超时 */
+.st-mle { background: var(--purple); }   /* 紫：超内存 */
+.st-re { background: var(--pink); }      /* 粉：运行错误 */
+.st-ce { background: var(--warn); }      /* 黄：编译错误 */
+.st-pending { background: var(--gray); } /* 灰：评测中 */
+.st-unknown { background: var(--gray); }
 
 /* 逐测试点 chip */
 .result-detail {
@@ -344,11 +422,11 @@ tr:hover td {
 }
 
 .compile-error {
-  background: #fef2f2;
-  border: 1px solid #fecaca;
+  background: #fff8f8;
+  border: 1px solid #ffcecb;
   border-radius: 6px;
   padding: 0.8rem;
-  color: #991b1b;
+  color: #8c1919;
   font-size: 0.85rem;
   white-space: pre-wrap;
   max-height: 240px;

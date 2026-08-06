@@ -40,23 +40,24 @@ function syncScroll(e) {
 </script>
 
 <style scoped>
-/* 深色终端风编辑器（评测世界的"世界感"：编译器/终端） */
+/* 浅色现代工具风编辑器 */
 .code-editor {
   display: flex;
   border: 1px solid var(--border);
   border-radius: 6px;
   overflow: hidden;
-  background: #1e1e1e;
-  font-family: Consolas, Monaco, monospace;
-  font-size: 0.9rem;
-  line-height: 1.5;
+  background: #fafbfc;
+  font-family: ui-monospace, "SF Mono", Consolas, "Courier New", monospace;
+  font-size: 0.88rem;
+  line-height: 1.55;
 }
 .code-gutter {
   flex-shrink: 0;
-  padding: 0.5rem 0.6rem;
+  padding: 0.55rem 0.7rem;
   text-align: right;
-  color: #6b7280;
-  background: #252526;
+  color: #9ca3af;
+  background: #f1f3f5;
+  border-right: 1px solid var(--border);
   user-select: none;
   overflow: hidden;
 }
@@ -66,8 +67,8 @@ function syncScroll(e) {
   resize: vertical;
   border: none;
   background: transparent;
-  color: #d4d4d4;
-  padding: 0.5rem 0.6rem;
+  color: #1f2328;
+  padding: 0.55rem 0.7rem;
   font-family: inherit;
   font-size: inherit;
   line-height: inherit;
