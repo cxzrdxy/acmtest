@@ -27,7 +27,7 @@ docker build -f backend/Judge/Dockerfile.runtimes --target python-runtime -t jud
 ## 关键注意事项
 
 - **代码修改须先确认**：任何对代码/文件的修改，执行前必须先向用户确认。
-- **前端已完整实现**（M1.3-M1.5：登录/注册/列表/详情 + ProblemForm 模态框 + 守卫 + 拦截器），依赖已装（Vue3+Vite+Pinia+Router+axios）。设计文档保留 `frontend/DESIGN_FRONTEND_M1.md`。
+- **前端已完整实现**（M1.3-M1.5：登录/注册/列表/详情 + ProblemForm 模态框 + 守卫 + 拦截器），依赖已装（Vue3+Vite+Pinia+Router+axios）。
 - **连接串陷阱**：`appsettings.json` 的 `Host=db` 只在 docker 网络内可用；本地跑必须用环境变量覆盖为 `Host=localhost`。**端口**：本机 5432 被 shellquest-pg 占用，acmtest db 在 compose 里映射为宿主 5433（容器内仍 5432，docker 网络内 Host=db;Port=5432 不变）。
 - **测试连真实数据库**：`TestAppFactory.cs` 用 `WebApplicationFactory<Program>` 起内存站点但连同一个 Postgres，每个测试前 TRUNCATE users/problems/submissions。改表结构可能影响测试。**M2 起测试还依赖 Docker 沙箱**（评测用例真实起容器），跑测试前需 Docker Desktop 运行 + judge 镜像存在。
 - **测试并行化已禁用**：`AssemblyInfo.cs` 禁用 xunit 并行（多个测试类共用一个真实 Postgres，并行会互相污染，如 M1 的 keyword 搜索被 M2 的题目命中）。
