@@ -12,7 +12,7 @@ public class TestAppFactory : WebApplicationFactory<Program>
     {
         using var scope = Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-        foreach (var tbl in new[] { "users", "problems" })
+        foreach (var tbl in new[] { "users", "problems", "submissions" })
 #pragma warning disable EF1002 // 表名为硬编码常量，无注入风险
             await db.Database.ExecuteSqlRawAsync(
                 $"TRUNCATE TABLE \"{tbl}\" RESTART IDENTITY CASCADE");

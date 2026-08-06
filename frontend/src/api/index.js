@@ -56,4 +56,10 @@ export const problemApi = {
   remove: (pid) => http.delete(`/problems/${pid}`)
 }
 
+// 提交接口（对齐后端 /api/v1）
+export const submissionApi = {
+  submit: (pid, data) => http.post(`/problems/${pid}/submissions`, data),
+  get: (sid) => http.get(`/submissions/${sid}`)
+}
+
 export default http

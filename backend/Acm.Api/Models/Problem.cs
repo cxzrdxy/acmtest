@@ -46,11 +46,15 @@ public class Problem
     // 题目创建者，外键关联 users.id；自用单用户场景下值恒为同一用户
     public int? AuthorId { get; set; }
 
+    // 通过人数（评测写回时：该用户首次 AC 才 +1，去重 UserId）
+    public int AcCount { get; set; }
+
+    // 提交总数（每次评测 +1）
+    public int SubmitCount { get; set; }
+
     // 创建时间，DB 默认 now()
     public DateTime CreatedAt { get; set; }
 
     // 更新时间
     public DateTime UpdatedAt { get; set; }
-
-    // AC / 提交计数字段留至 M2 评测阶段补充
 }

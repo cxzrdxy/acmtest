@@ -12,13 +12,17 @@ var builder = WebApplication.CreateBuilder(args); //创建应用构建器
 // 配置绑定
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt")); // 注册JWT Configure - 绑定配置到强类型类
 builder.Services.Configure<AppOptions>(builder.Configuration.GetSection("App"));
+builder.Services.Configure<JudgeOptions>(builder.Configuration.GetSection("Judge")); // 注册评测配置（沙箱镜像/测试点目录）
 
 // DB / 业务服务 DI
 builder.Services.AddDbContextPool<AppDbContext>(opt =>// 注册 DbContext + 连接池 + 配置到 DI 容器
     opt.UseNpgsql(builder.Configuration.GetConnectionString("Default")));//把 UseNpgsql(连接串) 的配置打包成 DbContextOptions<AppDbContext>，注册进 DI
 builder.Services.AddScoped<AuthService>(); //直接注册 AuthService到 DI容器；注册普通服务（每请求一个）
 builder.Services.AddScoped<ProblemService>();//直接注册 ProblemService到 DI容器；注册普通服务（每请求一个）
+builder.Services.AddScoped<JudgeService>();//评测编排（每请求一个，内部用 db + sandbox）
+builder.Services.AddScoped<TestcaseService>();//测试点文件系统管理（每请求一个）
 builder.Services.AddSingleton<TokenService>();//注册单例服务（全局一个）
+builder.Services.AddSingleton<SandboxRunner>();//沙箱执行器单例（内部持有 DockerClient 长连接，无状态可复用）
 
 // JWT 鉴权
 var jwt = builder.Configuration.GetSection("Jwt").Get<JwtOptions>()!;// 读取注册的 JWT 配置

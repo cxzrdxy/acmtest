@@ -7,6 +7,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 {
     public DbSet<User> Users => Set<User>();//user表的入口声明
     public DbSet<Problem> Problems => Set<Problem>();//problem表的入口声明
+    public DbSet<Submission> Submissions => Set<Submission>();//submissions表入口声明
 
     protected override void OnModelCreating(ModelBuilder b)
     {
@@ -28,6 +29,20 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             e.Property(p => p.CreatedAt).HasDefaultValueSql("now()"); // 创建时间默认当前时间
             e.Property(p => p.UpdatedAt).HasDefaultValueSql("now()"); // 更新时间默认当前时间（业务层 UpdateAsync 里也会手动刷新）
             e.HasOne<User>().WithMany().HasForeignKey(p => p.AuthorId); // 外键：problems.author_id → users.id（题目属于哪个用户）
+        });
+
+        b.Entity<Submission>(e =>
+        {
+            e.ToTable("submissions");
+            e.Property(s => s.Code).HasColumnType("text");          // 源码长，text 不限长
+            e.Property(s => s.Detail).HasColumnType("jsonb");       // 逐测试点结果，JSON 结构化存
+            e.Property(s => s.Status).HasMaxLength(16);         // 状态枚举字符串
+            e.Property(s => s.CreatedAt).HasDefaultValueSql("now()");
+            e.HasOne<User>().WithMany().HasForeignKey(s => s.UserId);
+            e.HasOne<Problem>().WithMany().HasForeignKey(s => s.ProblemId);
+            // 索引：按用户查提交历史 / 按题查提交，WHERE + ORDER BY Id 一步走索引
+            e.HasIndex(s => new { s.UserId, s.Id });
+            e.HasIndex(s => new { s.ProblemId, s.Id });
         });
     }
 }

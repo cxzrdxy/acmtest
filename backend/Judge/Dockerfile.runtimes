@@ -1,0 +1,11 @@
+# 多阶段：两个沙箱镜像共用一份构建脚本
+# 构建：docker build -f backend/Judge/Dockerfile.runtimes --target cpp    -t judge-cpp:latest    backend/Judge
+#        docker build -f backend/Judge/Dockerfile.runtimes --target python -t judge-python:latest backend/Judge
+
+FROM debian:bookworm-slim AS cpp
+RUN apt-get update && apt-get install -y --no-install-recommends g++ \
+    && rm -rf /var/lib/apt/lists/*
+WORKDIR /work
+
+FROM python:3.12-slim AS python-runtime
+WORKDIR /work

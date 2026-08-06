@@ -9,12 +9,13 @@ namespace Acm.Api.Controllers;
 [ApiController]
 [Authorize]                       // 控制器级：所有接口需登录
 [Route("api/v1/problems")]
-public class ProblemsController(ProblemService svc) : ControllerBase
+public class ProblemsController(ProblemService svc, TestcaseService tc) : ControllerBase
 {
     private static ProblemRead ToRead(Models.Problem p) => new(
         p.Id, p.Slug, p.Title, p.Description, p.InputDesc, p.OutputDesc,
         p.TimeLimit, p.MemoryLimit, p.Tags, p.Difficulty,
-        p.SampleInputs, p.SampleOutputs, p.AuthorId);
+        p.SampleInputs, p.SampleOutputs, p.AuthorId,
+        p.AcCount, p.SubmitCount);
 
     [HttpGet]
     public async Task<ActionResult<ProblemListResponse>> List(
@@ -52,6 +53,30 @@ public class ProblemsController(ProblemService svc) : ControllerBase
     public async Task<IActionResult> Delete(int pid)
     {
         await svc.DeleteAsync(pid);
+        return NoContent();
+    }
+
+    // ---- 测试点管理（文件系统） ----
+
+    // 列出测试点：编号 + in/out 大小
+    [HttpGet("{pid:int}/testcases")]
+    public ActionResult<TestcaseListResponse> ListTestcases(int pid) =>
+        new TestcaseListResponse(tc.List(pid));
+
+    // 上传单个测试点（multipart：n + inFile + outFile；同名覆盖）
+    [HttpPost("{pid:int}/testcases")]
+    public async Task<IActionResult> UploadTestcase(int pid, [FromForm] TestcaseUpload req, CancellationToken ct)
+    {
+        await svc.GetByIdAsync(pid);   // 题必须存在
+        await tc.SaveAsync(pid, req, ct);
+        return NoContent();
+    }
+
+    // 删除指定测试点（in + out；不存在也 204）
+    [HttpDelete("{pid:int}/testcases/{n:int}")]
+    public IActionResult DeleteTestcase(int pid, int n)
+    {
+        tc.Delete(pid, n);
         return NoContent();
     }
 }

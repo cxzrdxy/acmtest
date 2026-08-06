@@ -290,6 +290,72 @@ tr:hover td {
   color: var(--muted);
 }
 
+/* 提交评测区 */
+.submit-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+/* 评测结果 */
+.result-head {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.result-empty {
+  border: 1px dashed var(--border);
+  border-radius: 6px;
+  padding: 1rem;
+  text-align: center;
+}
+
+/* 状态徽章色（语义色，区别于难度徽章） */
+.st-ac { background: #22c55e; }      /* 绿：通过 */
+.st-wa { background: #ef4444; }      /* 红：答案错误 */
+.st-tle { background: #f97316; }     /* 橙：超时 */
+.st-mle { background: #a855f7; }     /* 紫：超内存 */
+.st-re { background: #ec4899; }      /* 粉：运行错误 */
+.st-ce { background: #eab308; }      /* 黄：编译错误 */
+.st-pending { background: #6b7280; } /* 灰：评测中 */
+.st-unknown { background: #6b7280; }
+
+/* 逐测试点 chip */
+.result-detail {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.6rem;
+}
+
+.tc-chip {
+  padding: 0.2rem 0.7rem;
+  border-radius: 999px;
+  color: #fff;
+  font-size: 0.8rem;
+}
+
+/* 编译错误 */
+.ce-title {
+  margin-top: 0.8rem;
+  font-size: 0.9rem;
+}
+
+.compile-error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+  padding: 0.8rem;
+  color: #991b1b;
+  font-size: 0.85rem;
+  white-space: pre-wrap;
+  max-height: 240px;
+  overflow-y: auto;
+  margin-top: 0.4rem;
+}
+
 /* 工具类 */
 .mt-1 { margin-top: 1rem; }
 .mb-1 { margin-bottom: 1rem; }

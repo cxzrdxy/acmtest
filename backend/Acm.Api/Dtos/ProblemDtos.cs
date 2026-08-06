@@ -33,6 +33,7 @@ public record ProblemRead(
     string? InputDesc, string? OutputDesc,
     int TimeLimit, int MemoryLimit,
     List<string> Tags, short? Difficulty,
-    string SampleInputs, string SampleOutputs, int? AuthorId);
+    string SampleInputs, string SampleOutputs, int? AuthorId,
+    int AcCount, int SubmitCount);
 
 public record ProblemListResponse(List<ProblemRead> Items, int Total, int Page, int Size);

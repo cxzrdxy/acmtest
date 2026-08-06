@@ -18,5 +18,7 @@ dist/
 # 测试数据（体积大，不入库）
 data/testcases/*
 !data/testcases/.gitkeep
+data/tmp/*
+!data/tmp/.gitkeep
 data/spj/*
 !data/spj/.gitkeep
