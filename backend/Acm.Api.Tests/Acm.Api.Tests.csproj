@@ -16,6 +16,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Acm.Api\Acm.Api.csproj" />
+    <!-- 引 Worker：其 dll 复制到测试输出目录，WorkerFixture 直接 Process.Start 启动 -->
+    <ProjectReference Include="..\Acm.JudgeWorker\Acm.JudgeWorker.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Worker 在输出目录读 appsettings.json（Judge 配置节），Link 保持原名随测试输出复制 -->
+    <None Include="..\Acm.JudgeWorker\appsettings.json" CopyToOutputDirectory="PreserveNewest" Link="appsettings.json" />
   </ItemGroup>
 
 </Project>

@@ -1,6 +1,6 @@
 # AGENTS.md
 
-个人自用 ACM 在线评测系统（M1 已收官：用户鉴权 + 题目 CRUD 全栈；M2 已收官：评测核心——提交 C++/Python 代码同步评测，AC/WA/TLE/MLE/RE/CE 判定 + 前端提交区；M3 进行中：异步评测，M3.1 已落地——Redis 队列 + 独立 Worker 进程 + 评测逻辑抽共享类库 Acm.Judge.Core，提交秒回 PENDING、Worker 后台出结果）。ASP.NET Core 8 Web API + EF Core 8 (Npgsql) + PostgreSQL 16 + Vue 3 + Redis 7。
+个人自用 ACM 在线评测系统（M1 已收官：用户鉴权 + 题目 CRUD 全栈；M2 已收官：评测核心——提交 C++/Python 代码同步评测，AC/WA/TLE/MLE/RE/CE 判定 + 前端提交区；M3 已收官：异步评测——Redis 队列 + 独立 Worker 进程 + 评测逻辑抽共享类库 Acm.Judge.Core，提交秒回 PENDING、Worker 后台出结果 + 前端轮询 + 提交历史页 + 测试自动化）。ASP.NET Core 8 Web API + EF Core 8 (Npgsql) + PostgreSQL 16 + Vue 3 + Redis 7。
 
 ## 常用命令
 
@@ -19,9 +19,7 @@ $env:ConnectionStrings__Default="Host=localhost;Port=5433;Database=acm;Username=
 $env:ConnectionStrings__Redis="localhost:6380"
 dotnet run --project backend/Acm.JudgeWorker
 
-# 集成测试（依赖 ①Postgres 运行中 ②Redis 运行中 ③Worker 进程在跑 ④连接串环境变量；Worker 不在跑则提交永远卡 PENDING）
-$env:ConnectionStrings__Default="Host=localhost;Port=5433;Database=acm;Username=acm;Password=acm"
-$env:ConnectionStrings__Redis="localhost:6380"
+# 集成测试（M3.4 起全自动：fixture 自动起 compose db/redis + Worker 子进程，无需手动前置；依赖 Docker Desktop 运行中）
 dotnet test
 
 # EF 迁移（AppDbContext 已迁入 Acm.Judge.Core，故 --project 指向 Core；startup 用 Api 拿提供程序）
@@ -36,9 +34,9 @@ docker build -f backend/Judge/Dockerfile.runtimes --target python-runtime -t jud
 ## 关键注意事项
 
 - **代码修改须先确认**：任何对代码/文件的修改，执行前必须先向用户确认。**确认后不要每步停等**：无风险的常规操作（起服务、查端口/日志、造测试数据、跑构建/测试/验证）应一口气连续做完，只在真正需要用户拍板的节点停（修改文件前、git 提交前、方案分歧时）。
-- **前端已完整实现**（M1.3-M1.5：登录/注册/列表/详情 + ProblemForm 模态框 + 守卫 + 拦截器），依赖已装（Vue3+Vite+Pinia+Router+axios）。**M3.2 已落地**：提交区改异步轮询（递归 setTimeout 1.5s×60 次上限，onUnmounted 清理，秒回"排队中"自动流转终态），Playwright 7 场景验收通过。**M3.3 已落地**：提交历史闭环——后端 `GET /api/v1/submissions` 列表 API（强制当前用户 + problemId/status 筛选 + 分页 + JOIN 题目名，`SubmissionRead` 末尾追加 `Code`）+ 前端 `SubmissionHistory`/`SubmissionDetail` 页面 + 导航"提交记录"；结果区抽共享组件 `SubmissionResult.vue`（ProblemDetail 与详情页共用），`CodeEditor` 支持 readonly。**M3.4 待做**：测试自动化（自动起 Worker/TestContainer 选型）+ 总验收。
+- **前端已完整实现**（M1.3-M1.5：登录/注册/列表/详情 + ProblemForm 模态框 + 守卫 + 拦截器），依赖已装（Vue3+Vite+Pinia+Router+axios）。**M3.2 已落地**：提交区改异步轮询（递归 setTimeout 1.5s×60 次上限，onUnmounted 清理，秒回"排队中"自动流转终态），Playwright 7 场景验收通过。**M3.3 已落地**：提交历史闭环——后端 `GET /api/v1/submissions` 列表 API（强制当前用户 + problemId/status 筛选 + 分页 + JOIN 题目名，`SubmissionRead` 末尾追加 `Code`）+ 前端 `SubmissionHistory`/`SubmissionDetail` 页面 + 导航"提交记录"；结果区抽共享组件 `SubmissionResult.vue`（ProblemDetail 与详情页共用），`CodeEditor` 支持 readonly。**M3.4 已落地**：测试自动化（`backend/PLAN_M3.4.md`）——不用 TestContainer，改 `WorkerFixture`（CollectionFixture 单例）自动起 compose db/redis + Worker 子进程（`Acm.Api.Tests/TestEnvironment/`，EnvsBootstrap 幂等 + 日志关键字就绪探测 + Dispose 杀进程），`dotnet test` 一条命令全自动，冷环境总验收 + Playwright 全流程通过。**M3 里程碑收官**，M4 候选：SignalR 推送 / SPJ 特判 / 子任务 / 排名统计 / Monaco 高亮。
 - **连接串陷阱**：`appsettings.json` 的 `Host=db`/`Redis=redis:6379` 只在 docker 网络内可用；本地跑必须用环境变量覆盖为 `Host=localhost` / `ConnectionStrings__Redis=localhost:6380`。**端口**：本机 5432 被 shellquest-pg 占用（db→5433）；acmtest compose redis 映射 6380（WSL 常规发行版已移除、宿主 6379 实际空闲，但约定一律用 6380，勿动 compose 映射）。
-- **测试连真实数据库 + 真实 Redis + Worker 进程**：`TestAppFactory.cs` 用 `WebApplicationFactory<Program>` 起内存站点但连同一个 Postgres，每个测试前 TRUNCATE。M3 起测试还依赖 Redis 运行 + **Worker 进程在跑**（提交不再同步返回终态，测试改轮询等待；Worker 不在跑则提交永远 PENDING，测试超时失败）。**Worker 进程 TestAppFactory 无法托管**——跑测试前手动起 Worker（见常用命令）。M3.4 再做 TestContainer/前置脚本自动化。
+- **测试连真实数据库 + 真实 Redis + Worker 进程**：`TestAppFactory.cs` 用 `WebApplicationFactory<Program>` 起内存站点但连同一个 Postgres，每个测试前 TRUNCATE。**M3.4 起全自动**：三个测试类（M1/M2/M3）统一标注 `[Collection(WorkerFixture.Collection)]`，`WorkerFixture` 构造注入默认连接串（未设时补 5433/6380，用户显式设置则尊重）→ `StartAsync`（各测试类 InitializeAsync 幂等调用）自动 `docker compose up -d db redis`（TCP 探测已监听则跳过）+ 起 Worker 子进程（直接跑 `Acm.JudgeWorker/bin/Debug/net8.0` 的 dll——Exe 项目 ProjectReference 不复制依赖到测试输出，故指向 Worker 自身输出目录）+ stdout 日志关键字"开始消费"就绪探测（15s 超时）→ Dispose 杀进程。测试不再依赖手动起 Worker，但**依赖 Docker Desktop 运行中**。xunit 要求 `ICollectionFixture` 标注在 collection 定义类（`EnvCollection`）上，不能直接标测试类。
 - **测试并行化已禁用**：`AssemblyInfo.cs` 禁用 xunit 并行（多个测试类共用一个真实 Postgres，并行会互相污染，如 M1 的 keyword 搜索被 M2 的题目命中）。
 - **个人自用简化设计**（勿"修正"）：无 admin/角色区分，所有登录用户可 CRUD 题目；无邮箱强校验；无密码复杂度校验。见 DESIGN_M1.md 1.3。
 - **错误契约**：Service 抛 `ApiException(status, detail)`（定义于 AuthService.cs），Program.cs 全局处理器转 `{detail: msg}`，非 ApiException 一律 500。入队失败专用：抛 `ApiException(503, "评测队列不可用")` + 回滚刚插入的 PENDING 行。

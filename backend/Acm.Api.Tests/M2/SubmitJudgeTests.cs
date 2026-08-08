@@ -3,13 +3,17 @@ using System.Net.Http.Json;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Acm.Api.Dtos;
+using Acm.Api.Tests.TestEnvironment;
 using Acm.Judge.Core.Judge;
 using Xunit;
 
 namespace Acm.Api.Tests.M2;
 
 /// <summary>评测集成测试：连真实 Postgres + Redis + Worker 进程 + Docker 沙箱，验证异步评测全链路。</summary>
-public class SubmitJudgeTests(TestAppFactory factory) : IClassFixture<TestAppFactory>, IAsyncLifetime
+[Collection(WorkerFixture.Collection)]
+public class SubmitJudgeTests(
+    TestAppFactory factory, WorkerFixture worker)
+    : IClassFixture<TestAppFactory>, IAsyncLifetime
 {
     private readonly TestAppFactory _factory = factory;
     private readonly HttpClient _client = factory.CreateClient();
@@ -19,6 +23,7 @@ public class SubmitJudgeTests(TestAppFactory factory) : IClassFixture<TestAppFac
 
     public async Task InitializeAsync()
     {
+        await worker.StartAsync();   // 幂等：compose db/redis + Worker 子进程就绪
         await _factory.CleanDbAsync();
 
         // 注册 + 登录

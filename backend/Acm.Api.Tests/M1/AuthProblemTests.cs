@@ -1,11 +1,15 @@
 using System.Net;
 using System.Net.Http.Json;
 using Acm.Api.Dtos;
+using Acm.Api.Tests.TestEnvironment;
 using Xunit;
 
 namespace Acm.Api.Tests.M1;
 
-public class AuthProblemTests(TestAppFactory factory) : IClassFixture<TestAppFactory>, IAsyncLifetime
+// 接入统一 collection：WorkerFixture 构造注入默认连接串（本类不调 StartAsync，纯 CRUD 无需 Worker）
+[Collection(WorkerFixture.Collection)]
+public class AuthProblemTests(TestAppFactory factory, WorkerFixture worker)
+    : IClassFixture<TestAppFactory>, IAsyncLifetime
 {
     private readonly TestAppFactory _factory = factory;
     private readonly HttpClient _client = factory.CreateClient();
