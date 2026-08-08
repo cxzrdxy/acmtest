@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Acm.Api.Data.Migrations
+namespace Acm.Judge.Core.Data.Migrations
 {
     /// <inheritdoc />
     public partial class AddSubmissionsAndCounters : Migration

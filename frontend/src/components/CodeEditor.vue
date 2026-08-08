@@ -8,6 +8,7 @@
       ref="taRef"
       class="code-input"
       :value="modelValue"
+      :readonly="readonly"
       @input="onInput"
       @scroll="syncScroll"
       :spellcheck="false"
@@ -20,7 +21,8 @@ import { ref, computed } from 'vue'
 
 const props = defineProps({
   modelValue: { type: String, default: '' },
-  rows: { type: Number, default: 12 }
+  rows: { type: Number, default: 12 },
+  readonly: { type: Boolean, default: false } // 详情页只读展示
 })
 
 const emit = defineEmits(['update:modelValue'])
@@ -31,6 +33,7 @@ const gutterRef = ref(null)
 const lineCount = computed(() => (props.modelValue.match(/\n/g)?.length ?? 0) + 1)
 
 function onInput(e) {
+  if (props.readonly) return
   emit('update:modelValue', e.target.value)
 }
 

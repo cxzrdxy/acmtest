@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using Acm.Api.Data;
+using Acm.Judge.Core.Data;
 using Acm.Api.Dtos;
 using Acm.Api.Services;
 

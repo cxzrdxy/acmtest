@@ -3,9 +3,12 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using StackExchange.Redis;
 using Acm.Api;
-using Acm.Api.Data;
+using Acm.Judge.Core.Data;
 using Acm.Api.Services;
+using Acm.Judge.Core.Data;
+using Acm.Judge.Core.Judge;
 
 var builder = WebApplication.CreateBuilder(args); //创建应用构建器
 
@@ -22,7 +25,13 @@ builder.Services.AddScoped<ProblemService>();//直接注册 ProblemService到 DI
 builder.Services.AddScoped<JudgeService>();//评测编排（每请求一个，内部用 db + sandbox）
 builder.Services.AddScoped<TestcaseService>();//测试点文件系统管理（每请求一个）
 builder.Services.AddSingleton<TokenService>();//注册单例服务（全局一个）
-builder.Services.AddSingleton<SandboxRunner>();//沙箱执行器单例（内部持有 DockerClient 长连接，无状态可复用）
+
+// Redis：AbortOnConnectFail=false —— 连接失败不抛异常，后台自动重连（Redis 短暂不可用 Web 仍能启动/存活）
+var redisOpts = ConfigurationOptions.Parse(builder.Configuration.GetConnectionString("Redis")!);
+redisOpts.AbortOnConnectFail = false;
+redisOpts.AsyncTimeout = 15_000;   // 单命令最长等待 15s（入队远快于此，仅防极端网络抖动）
+builder.Services.AddSingleton<IConnectionMultiplexer>(_ => ConnectionMultiplexer.Connect(redisOpts));
+builder.Services.AddSingleton<SubmissionQueue>();//评测入队（Redis List，单例无状态）
 
 // JWT 鉴权
 var jwt = builder.Configuration.GetSection("Jwt").Get<JwtOptions>()!;// 读取注册的 JWT 配置

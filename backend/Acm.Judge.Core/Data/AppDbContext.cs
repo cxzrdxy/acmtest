@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using Acm.Api.Models;
+using Acm.Judge.Core.Models;
 
-namespace Acm.Api.Data;
+namespace Acm.Judge.Core.Data;
 
 public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)//整个项目唯一的数据库上下文
 {

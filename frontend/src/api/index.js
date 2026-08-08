@@ -59,7 +59,8 @@ export const problemApi = {
 // 提交接口（对齐后端 /api/v1）
 export const submissionApi = {
   submit: (pid, data) => http.post(`/problems/${pid}/submissions`, data),
-  get: (sid) => http.get(`/submissions/${sid}`)
+  get: (sid) => http.get(`/submissions/${sid}`),
+  list: (params) => http.get('/submissions', { params })
 }
 
 export default http

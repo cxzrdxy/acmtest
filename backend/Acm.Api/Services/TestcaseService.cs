@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Options;
+using Acm.Judge.Core.Judge;
 using Acm.Api.Dtos;
 
 namespace Acm.Api.Services;

@@ -1,4 +1,4 @@
-namespace Acm.Api.Models;
+namespace Acm.Judge.Core.Models;
 
 /// <summary>
 /// 提交记录表。一次提交一行；评测结果 Detail 以 jsonb 整存逐测试点数组。

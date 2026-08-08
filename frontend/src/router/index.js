@@ -3,6 +3,8 @@ import Login from '../views/Login.vue'
 import Register from '../views/Register.vue'
 import ProblemList from '../views/ProblemList.vue'
 import ProblemDetail from '../views/ProblemDetail.vue'
+import SubmissionHistory from '../views/SubmissionHistory.vue'
+import SubmissionDetail from '../views/SubmissionDetail.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -11,7 +13,9 @@ const router = createRouter({
     { path: '/login', component: Login, meta: { public: true } },
     { path: '/register', component: Register, meta: { public: true } },
     { path: '/problems', component: ProblemList },
-    { path: '/problems/:pid', component: ProblemDetail }
+    { path: '/problems/:pid', component: ProblemDetail },
+    { path: '/submissions', component: SubmissionHistory },
+    { path: '/submissions/:sid', component: SubmissionDetail }
   ]
 })
 

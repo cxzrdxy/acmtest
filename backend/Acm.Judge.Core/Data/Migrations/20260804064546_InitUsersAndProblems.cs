@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Acm.Api.Data.Migrations
+namespace Acm.Judge.Core.Data.Migrations
 {
     /// <inheritdoc />
     public partial class InitUsersAndProblems : Migration

@@ -1,9 +1,12 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
+COPY Acm.sln ./
 COPY Acm.Api/Acm.Api.csproj Acm.Api/
-RUN dotnet restore Acm.Api/Acm.Api.csproj
+COPY Acm.Judge.Core/Acm.Judge.Core.csproj Acm.Judge.Core/
+COPY Acm.JudgeWorker/Acm.JudgeWorker.csproj Acm.JudgeWorker/
+RUN dotnet restore Acm.sln
 COPY . .
-RUN dotnet publish Acm.Api/Acm.Api.csproj -c Release -o /app
+RUN dotnet publish Acm.sln -c Release -o /app
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app

@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using Acm.Api.Data;
+using Acm.Judge.Core.Data;
 using Acm.Api.Dtos;
-using Acm.Api.Models;
+using Acm.Judge.Core.Models;
 
 namespace Acm.Api.Services;
 

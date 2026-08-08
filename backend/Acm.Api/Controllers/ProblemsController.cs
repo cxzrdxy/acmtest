@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Acm.Api.Dtos;
 using Acm.Api.Services;
+using Acm.Judge.Core.Models;
 
 namespace Acm.Api.Controllers;
 
@@ -11,7 +12,7 @@ namespace Acm.Api.Controllers;
 [Route("api/v1/problems")]
 public class ProblemsController(ProblemService svc, TestcaseService tc) : ControllerBase
 {
-    private static ProblemRead ToRead(Models.Problem p) => new(
+    private static ProblemRead ToRead(Problem p) => new(
         p.Id, p.Slug, p.Title, p.Description, p.InputDesc, p.OutputDesc,
         p.TimeLimit, p.MemoryLimit, p.Tags, p.Difficulty,
         p.SampleInputs, p.SampleOutputs, p.AuthorId,

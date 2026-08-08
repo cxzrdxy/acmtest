@@ -11,14 +11,36 @@ services:
       test: ["CMD-SHELL", "pg_isready -U acm"]
       interval: 5s
 
+  redis:
+    image: redis:7-alpine
+    ports: ["6380:6379"]   # 约定本地一律用 6380（宿主 6379 虽空闲，勿改）
+    restart: unless-stopped
+
   backend:
     build: ./backend
     depends_on:
       db: { condition: service_healthy }
+      redis: { condition: service_started }
     environment:
       ConnectionStrings__Default: Host=db;Port=5432;Database=acm;Username=acm;Password=acm
+      ConnectionStrings__Redis: redis:6379
+      Judge__TestcaseRoot: /data/testcases
       Jwt__SecretKey: dev-secret-change-me-at-least-32-chars
       App__AllowRegister: "true"
+    volumes: ["./data:/data"]
     ports: ["8000:8000"]
+
+  judge-worker:
+    build: ./backend
+    command: ["dotnet", "Acm.JudgeWorker.dll"]
+    depends_on:
+      db: { condition: service_healthy }
+      redis: { condition: service_started }
+    restart: unless-stopped
+    environment:
+      ConnectionStrings__Default: Host=db;Port=5432;Database=acm;Username=acm;Password=acm
+      ConnectionStrings__Redis: redis:6379
+      Judge__TestcaseRoot: /data/testcases
+    volumes: ["./data:/data"]
 
 volumes: { pgdata: {} }

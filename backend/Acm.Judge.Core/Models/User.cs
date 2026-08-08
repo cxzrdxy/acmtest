@@ -1,4 +1,4 @@
-namespace Acm.Api.Models;
+namespace Acm.Judge.Core.Models;
 
 public class User
 {

@@ -1,6 +1,6 @@
 using System.Linq;
 
-namespace Acm.Api.Services;
+namespace Acm.Judge.Core.Judge;
 
 /// <summary>输出比对：忽略行尾空白和文件尾换行后逐字符比对。</summary>
 public static class OutputComparer

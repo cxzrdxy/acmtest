@@ -2,7 +2,7 @@ using Docker.DotNet;
 using Docker.DotNet.Models;
 using Microsoft.Extensions.Options;
 
-namespace Acm.Api.Services;
+namespace Acm.Judge.Core.Judge;
 
 // 单测试点运行请求（M2.3 JudgeService 构造）
 public record SandboxRequest(

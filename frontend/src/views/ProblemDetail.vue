@@ -1,9 +1,10 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { problemApi, submissionApi } from '../api'
 import ProblemForm from '../components/ProblemForm.vue'
 import CodeEditor from '../components/CodeEditor.vue'
+import SubmissionResult from '../components/SubmissionResult.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -18,18 +19,45 @@ const formInitial = ref(null)
 const language = ref('cpp17')
 const code = ref('')
 const submitting = ref(false)
-const result = ref(null)
+const result = ref(null)          // 提交后立即为 PENDING 对象，轮询直至终态
 
-// 状态徽章映射：颜色 + 用户语言文案
-const statusMeta = {
-  AC: { cls: 'st-ac', text: '通过' },
-  WA: { cls: 'st-wa', text: '答案错误' },
-  TLE: { cls: 'st-tle', text: '超时' },
-  MLE: { cls: 'st-mle', text: '超内存' },
-  RE: { cls: 'st-re', text: '运行错误' },
-  CE: { cls: 'st-ce', text: '编译错误' },
-  PENDING: { cls: 'st-pending', text: '排队中' },
-  JUDGING: { cls: 'st-pending', text: '评测中' }
+// 轮询控制：递归 setTimeout + 卸载标志
+let pollTimer = null
+let polling = false               // 组件是否存活（onUnmounted 置 false）
+const POLL_INTERVAL_MS = 1500     // 与 DESIGN_M3 约定一致
+const POLL_MAX_COUNT = 60         // 60 次 × 1.5s = 90s 上限
+
+// 终态集合：命中即停
+const FINAL_STATUS = ['AC', 'WA', 'TLE', 'MLE', 'RE', 'CE']
+
+function stopPolling() {
+  polling = false
+  if (pollTimer) { clearTimeout(pollTimer); pollTimer = null }
+}
+
+// 轮询一轮：GET 结果；终态/超时/异常即停
+function pollOnce(sid, count) {
+  if (!polling) return
+  submissionApi
+    .get(sid)
+    .then((cur) => {
+      if (!polling) return                     // 卸载竞态
+      result.value = cur                       // PENDING/JUDGING 也渲染（徽章流转）
+      if (FINAL_STATUS.includes(cur.status)) { // 终态：收工
+        submitting.value = false
+        return
+      }
+      if (count >= POLL_MAX_COUNT) {           // 超时：停止 + 提示
+        submitting.value = false
+        alert('评测超时，请稍后刷新页面查看结果')
+        return
+      }
+      pollTimer = setTimeout(() => pollOnce(sid, count + 1), POLL_INTERVAL_MS)
+    })
+    .catch(() => {
+      // 拦截器已 alert（网络/401），轮询停止
+      submitting.value = false
+    })
 }
 
 // 样例切分：按 "---" 分隔，输入输出按下标一一对应
@@ -60,13 +88,16 @@ async function handleSubmit() {
   submitting.value = true
   result.value = null
   try {
-    result.value = await submissionApi.submit(problem.value.id, {
+    // M3.1：提交秒回 PENDING，不阻塞
+    const sub = await submissionApi.submit(problem.value.id, {
       language: language.value,
       code: code.value
     })
+    result.value = sub
+    polling = true
+    pollTimer = setTimeout(() => pollOnce(sub.id, 1), POLL_INTERVAL_MS)
   } catch {
-    // 拦截器已 alert
-  } finally {
+    // 拦截器已 alert（含 503 队列不可用）；解锁重试
     submitting.value = false
   }
 }
@@ -95,6 +126,9 @@ function onSaved() {
 }
 
 onMounted(load)
+
+// 组件销毁：停止轮询，避免已销毁组件继续发请求
+onUnmounted(stopPolling)
 </script>
 
 <template>
@@ -157,38 +191,12 @@ onMounted(load)
     <!-- 评测结果区 -->
     <section class="mt-1">
       <h3>评测结果</h3>
-      <p v-if="!result && !submitting" class="text-muted result-empty">
+      <!-- 无提交：空态 -->
+      <p v-if="!result" class="text-muted result-empty">
         提交代码后，评测结果将显示在这里
       </p>
-      <p v-else-if="submitting" class="text-muted result-empty">正在评测，请稍候...</p>
-      <template v-else>
-        <div class="result-head">
-          <span :class="`badge ${statusMeta[result.status]?.cls ?? 'st-unknown'}`">
-            {{ statusMeta[result.status]?.text ?? result.status }}
-          </span>
-          <span class="text-muted">分数 {{ result.score }}/100</span>
-          <span v-if="result.timeMs != null" class="text-muted">最大耗时 {{ result.timeMs }}ms</span>
-          <span class="text-muted">提交 #{{ result.id }}</span>
-        </div>
-
-        <!-- 编译错误：单独区域展示 -->
-        <div v-if="result.status === 'CE'">
-          <h4 class="ce-title">编译错误</h4>
-          <pre class="compile-error">{{ result.compileError }}</pre>
-        </div>
-
-        <!-- 逐测试点 -->
-        <div v-else-if="result.detail.length" class="result-detail">
-          <span
-            v-for="tc in result.detail"
-            :key="tc.id"
-            :class="`tc-chip ${statusMeta[tc.status]?.cls ?? 'st-unknown'}`"
-          >
-            点{{ tc.id }} {{ statusMeta[tc.status]?.text ?? tc.status }}
-            <template v-if="tc.timeMs != null">· {{ tc.timeMs }}ms</template>
-          </span>
-        </div>
-      </template>
+      <!-- 有提交：中间态（排队中/评测中）与终态同一渲染路径，自动流转 -->
+      <SubmissionResult v-else :result="result" />
     </section>
 
     <div class="mt-1">

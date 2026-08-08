@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Acm.Api.Data;
+using Acm.Judge.Core.Data;
 
 namespace Acm.Api.Tests;
 

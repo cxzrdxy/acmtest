@@ -20,6 +20,7 @@ function handleLogout() {
     <nav class="nav-links">
       <template v-if="auth.isLoggedIn">
         <router-link to="/problems">题目</router-link>
+        <router-link to="/submissions">提交记录</router-link>
         <span class="username">
           <span class="avatar">{{ avatarLetter() }}</span>
           {{ auth.user?.username }}
