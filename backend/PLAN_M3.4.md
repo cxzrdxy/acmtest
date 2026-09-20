@@ -32,7 +32,7 @@
 | 测试 csproj **ProjectReference Acm.JudgeWorker** + 复制 appsettings.json | dotnet test 构建 solution 时 Worker 一并构建，其 dll 复制到测试输出目录；`Path.Combine(AppContext.BaseDirectory, "Acm.JudgeWorker.dll")` 直接起，无 `dotnet run` 编译开销 |
 | Worker 就绪探测用 **stdout 日志关键字**（重定向标准输出/错误，轮询出现"Worker 启动，开始消费 queue:judge"） | Worker 无监听端口可探测；日志是唯一可靠信号；超时抛异常并附捕获日志定位启动失败原因 |
 | **env 注入默认值仅当未设置**（`ConnectionStrings__Default`→5433 / `ConnectionStrings__Redis`→6380） | 一条命令跑测试的体验；同时尊重用户显式覆盖（AGENTS.md 连接串约定）；`Environment.SetEnvironmentVariable` 进程级，TestAppFactory 与 Worker 子进程同时生效 |
-| `Judge__TestcaseRoot` 不额外注入 | Worker appsettings.json 与 Web 的默认一致（`C:/Users/.../data/testcases`）；用户用 env 覆盖时子进程自动继承 |
+| `Judge__TestcaseRoot` 不额外注入 | Worker appsettings.json 与 Web 的默认一致（两侧都是仓库内相对路径 `data/testcases`，启动时由 TestcaseRootResolver 解析为绝对路径）；用户用 env 覆盖时子进程自动继承 |
 | 现有 `TestAppFactory` 保持 IClassFixture 每类一个实例 | 只加 Collection 标注（`[Collection("env")]` + `ICollectionFixture<WorkerFixture>`），改动最小；并行已禁用，无共享污染 |
 | 总验收顺序：**先停光环境**（进程 + compose）→ 冷启动 `dotnet test` 验证自动化 → 再起 Web/前端做 Playwright 全流程 | 冷环境验证最能暴露前置依赖遗漏；UI 全流程验证用户真实路径 |
 

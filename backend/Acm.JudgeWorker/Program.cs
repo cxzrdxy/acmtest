@@ -20,6 +20,8 @@ builder.Configuration.AddEnvironmentVariables();
 builder.Services.AddDbContextPool<AppDbContext>(opt =>
     opt.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
 builder.Services.Configure<JudgeOptions>(builder.Configuration.GetSection("Judge"));
+// 与 Web 侧同一份解析逻辑：配置里的相对路径 → 仓库根下的绝对路径（Docker Bind 只接受绝对路径）
+builder.Services.PostConfigure<JudgeOptions>(o => o.TestcaseRoot = TestcaseRootResolver.Resolve(o.TestcaseRoot));
 builder.Services.AddSingleton<SandboxRunner>();
 builder.Services.AddScoped<JudgeEngine>();
 

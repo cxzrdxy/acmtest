@@ -16,6 +16,9 @@ var builder = WebApplication.CreateBuilder(args); //创建应用构建器
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt")); // 注册JWT Configure - 绑定配置到强类型类
 builder.Services.Configure<AppOptions>(builder.Configuration.GetSection("App"));
 builder.Services.Configure<JudgeOptions>(builder.Configuration.GetSection("Judge")); // 注册评测配置（沙箱镜像/测试点目录）
+// 测试点目录在启动时解析成**宿主绝对路径**（SandboxRunner 把它当 Docker Bind 源，Docker 只接受绝对路径）：
+// 配置里写仓库内相对路径 data/testcases，容器里由 Judge__TestcaseRoot=/data/testcases 覆盖。见 TestcaseRootResolver。
+builder.Services.PostConfigure<JudgeOptions>(o => o.TestcaseRoot = TestcaseRootResolver.Resolve(o.TestcaseRoot));
 
 // DB / 业务服务 DI
 builder.Services.AddDbContextPool<AppDbContext>(opt =>// 注册 DbContext + 连接池 + 配置到 DI 容器

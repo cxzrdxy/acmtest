@@ -461,7 +461,7 @@ builder.Services.AddSingleton<SubmissionQueue>();
     "Redis": "redis:6379"
   },
   "Judge": {
-    "TestcaseRoot": "C:/Users/10408/Desktop/acmtest/data/testcases",
+    "TestcaseRoot": "data/testcases",
     "UseDockerSandbox": true,
     "DockerImageCpp": "judge-cpp:latest",
     "DockerImagePython": "judge-python:latest"
